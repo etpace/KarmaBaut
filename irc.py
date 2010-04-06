@@ -2,16 +2,14 @@
 # currently works with any message length
 # future versions should limit to 5(?) chars or more
 
+import json
 import socket
 import time
 
+
 # return dictionary key with lowest corresponding value
 def oldestKey(dict):
-    lowest = dict.keys()[0]
-    for key in dict.keys()[1:]:
-        if dict[key] < dict[lowest]:
-            lowest = key
-    return lowest
+    return sorted(dict.items(), key=lambda(_,x): x)[-1]
 
 # return identd and number of times message was pasted
 def countPoints(dict, oldest_Key):
@@ -62,7 +60,8 @@ irc.send('JOIN #bigcrew\r\n')
 # note: points currently reset every script restart
 # future version should save/load score file
 dInfo = {}
-dPoints = {}
+with open("points", "r+") as f:
+	dPoints = json.load(f)
 
 # active loop
 while True:
@@ -104,3 +103,5 @@ while True:
                     dPoints[AssignPoints[0]] += (AssignPoints[1] ** 2)
                 else:
                     dPoints[AssignPoints[0]] = (AssignPoints[1] ** 2)
+                with open("points", "w+") as f:
+                     json.dump(f)
